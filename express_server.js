@@ -50,15 +50,26 @@ app.get("/u/:shortURL", (req, res) => {
 
 // Single URL on a page.
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id };
+
+   let templateVars = { shortURL: req.params.id,
+                        longURL: urlDatabase[req.params.id] }
   res.render("urls_show", templateVars);
 });
 
 // Removes a url resourcs
 app.post("/urls/:id/delete", (req, res) => {
   let templateVars = { shortURL: req.params.id,
-  urls: urlDatabase };
+                        urls: urlDatabase };
   delete urlDatabase[req.params.id];
+  res.redirect("/urls", templateVars);
+});
+
+// Updates a long url
+app.post("/urls/:id", (req, res) => {
+  // let templateVars = { shortURL: req.params.id,
+  //                       urls: urlDatabase };
+
+  // delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 

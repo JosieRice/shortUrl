@@ -9,12 +9,16 @@
       <%- include('partials/_header') -%>
     </header>
 
+    <p>Short URL: <%= shortURL %> </p>
 
-      <p>Your new short URL is : ... </p>
+      <form method="POST">
+        <input type="text" size="35" value="<%= longURL %>"></input>
+        <input type="submit" value="Update"></input>
+      </form>
 
 
-
-      <!-- a dead link for shortening a new url -->
-      <a href="">Shorten your HTML with just one easy click!</a>
   </body>
 </html>
+
+
+
