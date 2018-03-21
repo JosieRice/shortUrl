@@ -3,8 +3,6 @@ var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
-
-
 app.set("view engine", "ejs");
 
 var urlDatabase = {
@@ -12,69 +10,74 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-console.log(urlDatabase['b2xVn2']);
+function generateRandomString (object) {
+  var shortUrl = "";
+  var char = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
 
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
-});
+  for (let i = 0; i < 6; i++) {
+    shortUrl += char.charAt(Math.floor(Math.random() * char.length));
+  }
+  urlDatabase[shortUrl] = Object.values(object)[0];
+  return shortUrl;
+}
 
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
-});
-
-app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  // res.send(generateRandomString(req.body));
-  res.redirect('/urls/' + generateRandomString(req.body));   // Respond with 'Ok' (we will replace this)
-});
-
+// Homepage
 app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+// List of URL from Database
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+// Enter a URL form
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+// Post new url on submit and redirect to short version
+app.post("/urls", (req, res) => {
+  res.redirect("/urls/" + generateRandomString(req.body));
+});
+
+// Redirect the /u/ url to the original based on Database info
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
+// Single URL on a page.
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id };
   res.render("urls_show", templateVars);
 });
 
+// Removes a url resourcs
+app.post("/urls/:id/delete", (req, res) => {
+  let templateVars = { shortURL: req.params.id,
+  urls: urlDatabase };
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
+});
+
+
+
+
+
+
+
+
+
+
+
+// Can go to this url to check database
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-});
-
+// Starts server
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
-function generateRandomString (object) {
-  var shortUrl = "";
-  var char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (let i = 0; i < 6; i++) {
-    shortUrl += char.charAt(Math.floor(Math.random() * char.length));
-  }
-
-   urlDatabase[shortUrl] = Object.values(object)[0];
-
-  return shortUrl;
-
-
-}
-
-
-
-
-
-
-
-

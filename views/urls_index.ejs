@@ -15,10 +15,14 @@
       <ul>
         <% for(var k in urls) { %>
         <li><%= urls[k] %> - - - <%= k %></li>
+        <form method="POST" action="/urls/<%= k %>/delete">
+          <input type="submit" value="Delete"></input>
+        </form>
         <br>
         <% } %>
       </ul>
 
-      <a href="urls/new">Shorten your HTML with just one easy click!</a>
+
+      <a href="/urls/new">Shorten your HTML with just one easy click!</a>
   </body>
 </html>
