@@ -33,14 +33,20 @@ app.get("/", (req, res) => {
 
 // List of URL from Database
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {  urls: urlDatabase,
+                        username: req.cookies["username"]
+                        };
   res.render("urls_index", templateVars);
 });
 
 // Enter a URL form
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {  urls: urlDatabase,
+                        username: req.cookies["username"]
+                        };
+  res.render("urls_new", templateVars);
 });
+
 
 // Post new url on submit and redirect to short version
 app.post("/urls", (req, res) => {
@@ -55,9 +61,9 @@ app.get("/u/:shortURL", (req, res) => {
 
 // Single URL on a page.
 app.get("/urls/:id", (req, res) => {
-
    let templateVars = { shortURL: req.params.id,
-                        longURL: urlDatabase[req.params.id] }
+                        longURL: urlDatabase[req.params.id],
+                        username: req.cookies["username"] }
   res.render("urls_show", templateVars);
 });
 
@@ -79,6 +85,7 @@ app.post("/urls/:id", (req, res) => {
 });
 
 
+
 // Login Route
 app.post("/login", (req, res) => {
 
@@ -88,10 +95,13 @@ app.post("/login", (req, res) => {
 })
 
 
+// Logout Route in process
+app.post("/logout", (req, res) => {
 
-
-
-
+  res.clearCookie('username', req.body.username);
+  // console.log('Cookies: ', req.body.username);
+  res.redirect("/urls");
+})
 
 
 
@@ -101,6 +111,10 @@ app.post("/login", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+
+
+
+
 
 // Starts server
 app.listen(PORT, () => {

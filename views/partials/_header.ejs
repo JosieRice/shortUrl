@@ -6,10 +6,28 @@
   </head>
   <body>
 
+<% if (username === undefined) { %>
+
+
         <form method="POST" action="/login">
           <input id="username" type="text" name="username" style="width: 200px" placeholder="username"></input>
           <input type="submit" value="sign in"></input>
         </form>
+
+
+<% } else{ %>
+
+<%= username %>
+
+        <form method="POST" action="/logout">
+          <input type="submit" value="sign out"></input>
+        </form>
+
+<% } %>
+
+
+
+
 
 
   </body>
