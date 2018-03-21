@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset="utf-8">
 <html lang="en">
   <head>
     <title>TinyApp</title>
@@ -6,25 +7,18 @@
   <body>
 
     <header>
-      <%- include('partials/_header') -%>
+      <% include('partials/_header') %>
     </header>
 
       <p>Testing html</p>
-      <!-- Add your EJS code here -->
-      <!-- a list of urls and shortened forms -->
-      <p>Check out these urls...</p>
 
-      <p><%= urls['b2xVn2'] %></p>
+      <ul>
+        <% for(var k in urls) { %>
+        <li><%= urls[k] %> - - - <%= k %></li>
+        <br>
+        <% } %>
+      </ul>
 
-      <p><%= urls['9sm5xK'] %></p>
-
-      <p>...and their much shorter (better) version</p>
-
-      <p><%= Object.keys(urls) %></p>
-
-
-
-      <!-- a dead link for shortening a new url -->
-      <a href="">Shorten your HTML with just one easy click!</a>
+      <a href="urls/new">Shorten your HTML with just one easy click!</a>
   </body>
 </html>

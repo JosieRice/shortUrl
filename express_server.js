@@ -12,7 +12,22 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+console.log(urlDatabase['b2xVn2']);
 
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // debug statement to see POST parameters
+  // res.send(generateRandomString(req.body));
+  res.redirect('/urls/' + generateRandomString(req.body));   // Respond with 'Ok' (we will replace this)
+});
 
 app.get("/", (req, res) => {
   res.end("Hello!");
@@ -39,3 +54,27 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
+function generateRandomString (object) {
+  var shortUrl = "";
+  var char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (let i = 0; i < 6; i++) {
+    shortUrl += char.charAt(Math.floor(Math.random() * char.length));
+  }
+
+   urlDatabase[shortUrl] = Object.values(object)[0];
+
+  return shortUrl;
+
+
+}
+
+
+
+
+
+
+
+
