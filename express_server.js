@@ -7,24 +7,56 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(cookieParser());
 
-
-
-
+// Database of short and long urls
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-function generateRandomString (object) {
-  var shortUrl = "";
-  var char = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+// User Database
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
 
+// creates a 6 character random string
+function generateRandomString () {
+  var shortUrl = "";
+  // omitted I, O, l, 0, 1 to make string easier to dictate
+  var char = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
   for (let i = 0; i < 6; i++) {
     shortUrl += char.charAt(Math.floor(Math.random() * char.length));
   }
-  urlDatabase[shortUrl] = Object.values(object)[0];
   return shortUrl;
 }
+
+
+// Searches users object vs parameter (use input email) for same email error
+function findDuplicate (email) {
+  let userKeys = [];
+  let emailList = [];
+
+  userKeys = Object.keys(users);
+
+  for (var i = 0; i < userKeys.length - 1; i++) {
+    emailList.push(users[userKeys[i]].email);
+  }
+
+  for (var j = 0; j < emailList.length; j++) {
+    if (email === emailList[j]) {
+      return emailList[j];
+    }
+  }
+};
+
 
 // Homepage
 app.get("/", (req, res) => {
@@ -50,7 +82,9 @@ app.get("/urls/new", (req, res) => {
 
 // Post new url on submit and redirect to short version
 app.post("/urls", (req, res) => {
-  res.redirect("/urls/" + generateRandomString(req.body));
+  const randomString = generateRandomString();
+  urlDatabase[randomString] = req.body.longURL
+  res.redirect(`/urls/${randomString}`)
 });
 
 // Redirect the /u/ url to the original based on Database info
@@ -101,6 +135,48 @@ app.post("/logout", (req, res) => {
   res.clearCookie('username', req.body.username);
   // console.log('Cookies: ', req.body.username);
   res.redirect("/urls");
+})
+
+
+// Registration Page
+app.get("/register", (req, res) => {
+  let templateVars = { shortURL: req.params.id,
+                        longURL: urlDatabase[req.params.id],
+                        username: req.cookies["username"] }
+  res.render("register", templateVars);
+})
+
+
+
+// Registration Post
+app.post("/register", (req, res) => {
+  // random string for cookie
+  const randomUserId = generateRandomString();
+
+  // creates newUser object with correct values
+  let newUser = new Object();
+    newUser['id'] = randomUserId;
+    newUser['email'] = req.body.email;
+    newUser['password'] = req.body.password;
+
+  // puts new user object into global user object
+  users[randomUserId] = newUser;
+
+  // assigns cookie's user_id to it's randomly gen string
+  res.cookie('user_id', newUser.id);
+
+  // empty username or password returns error
+  if (req.body.email === "" || req.body.password === "" ) {
+    res.status(400).send('400 Error, you must fill out the fields.');
+  }
+
+  // duplicate email returns error
+  if (req.body.email === findDuplicate(req.body.email)) {
+    res.status(400).send('That email already exists!')
+  }
+  // sends back to /urls after submit
+  else
+    res.redirect("/urls");
 })
 
 
