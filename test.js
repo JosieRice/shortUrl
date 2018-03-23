@@ -19,18 +19,19 @@ var urlDatabase = {
 // got username and need longUrl
 
 
-function findLongUrlWithShortUrl (id) {
-  for (let i in urlDatabase) {
-    if (id === urlDatabase[i].shortUrl) {
-      return urlDatabase[i].longUrl;
-    }
-  }
-};
+// if user !==
 
 
-findLongUrlWithShortUrl("9sm5xK");
+for (var i in urls) {
+  if (!user) {
+   res.redirect(/login)
 
-// console.log(findLongUrlWithId("userRandomID"));
+   } else {
+
+// load page
+   }
+}
+
 
 
 
@@ -44,8 +45,15 @@ Main function bugs
 which makes a POST request to /urls/:id   ?? makes a post but where to redirect?
 going to shortUrl, not userid this button doesn't work
 
+
 5 - on urls/[shortUrl] - if user is not logged in, it sends an error message.
 currently, logged out user can access this part
+
+
+
+
+
+
 
 6 - on urls/[shortUrl] - logged in user should get an error if they visit a page
 for a shortUrl they didn't make

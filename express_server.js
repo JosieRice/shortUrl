@@ -287,7 +287,13 @@ app.get("/urls/:id", (req, res) => {
                 shortUrl: req.params.id,   // works, keep
                 longUrl: findLongUrlWithShortUrl(req.params.id),  // doesn't call any url
                 user: req.session["user_id"] }
-  res.render("urls_show", Vars);
+
+    // redirects unauthorized users to login page
+    if (req.session["user_id"] !== urlDatabase[req.params.id].userID) {
+      res.redirect("/login");
+    } else {
+      res.render("urls_show", Vars);
+    }
 });
 
 // Removes a url resourcs
