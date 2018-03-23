@@ -275,10 +275,10 @@ urlDatabasePacking(req.session["user_id"], randomString, req.body.longURL);
   res.redirect(`/urls/${randomString}`)
 });
 
-// Redirect the /u/ url to the original based on Database info
+// redirect to long Url **** KEEP
 app.get("/u/:shortUrl", (req, res) => {
-  let longURL = urlDatabase[req.params.shortUrl];
-  res.redirect(longURL);
+ let longUrl = findLongUrlWithShortUrl(req.params.shortUrl);  //Keep ****
+res.redirect(longUrl);
 });
 
 // Single URL on a page.
@@ -292,8 +292,6 @@ app.get("/urls/:id", (req, res) => {
     if (!req.session["user_id"]) {
       res.redirect("/login");
     }
-
-
     if (req.session["user_id"] !== urlDatabase[req.params.id].userID) {
       // res.redirect("/login");
       res.status(403).send('unauthorized access');

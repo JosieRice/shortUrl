@@ -41,10 +41,8 @@ for (var i in urls) {
 Main function bugs
 
 
-6 - on urls/[shortUrl] - logged in user now gets an error if they visit a page
-for a shortUrl they didn't make
-
 7 - u/[shortUrl] should redirect to the full url if this shortUrl exists
+
 
 8 - check if login sets a cookie?
 
