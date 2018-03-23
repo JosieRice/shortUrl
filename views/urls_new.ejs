@@ -4,15 +4,12 @@
   <head></head>
 
   <body>
-
-
     <header>
       <% include partials/_header %>
     </header>
 
-    <form action="/urls" method="POST" style="margin:150px;">
-
-      <label for="longURL">Enter a URL:</label>
+    <form action="/urls" method="POST" style="margin:75px;">
+      <label for="longURL">Enter a URL to shorten:</label>
       <input id="longURL" type="text" name="longURL" style="width: 300px" value="http://">
       <input type="submit" value="Submit">
     </form>

@@ -6,17 +6,18 @@
   </head>
   <body>
 
-<h1>Tiny App, a division of Lighthouse Labs</h1>
-<p>Welcome</p>
-
+<h1>Tiny App - Simplify your links</h1>
 
 <% if(user === undefined) { %>
-  <a class="link" href="/login">Login</a><a class="link" href="/register">Register</a>
+  <a class="link" href="/login">Login</a>  -  <a class="link" href="/register">Register</a>
 <% } else { %>
 
-  <%= user %>
+  <p>Welcome <%= email %> </p>
 
-    <a class="link" href="/logout">Logout</a>
+
+        <form method="POST" action="/logout">
+          <input type="submit" value="Logout"></input>
+        </form>
 
   <% } %>
 

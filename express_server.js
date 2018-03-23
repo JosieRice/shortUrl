@@ -124,19 +124,43 @@ function urlDatabasePacking (ID, shortUrl, longUrl) {
 
 }
 
+// **** Keep
+function findIdWithEmail (email) {
+  // loops through object assigning i as the floating name of nested objects
+  for (let i in users) {
+    if (email === users[i].email) {
+      // returns users id that matches email put into function
+      return users[i].id;
+    }
+  }
+};
+
+// **** Keep
+function findEmailWithId (id) {
+  // loops through object assigning id as the floating name of nested objects
+  for (let i in users) {
+    if (id === users[i].id) {
+      // returns id in users that matches email put into function
+      return users[i].email;
+    }
+  }
+};
 
 
-// Homepage
+
+// Homepage root redirect to urls
 app.get("/", (req, res) => {
   res.redirect("/urls");
 });
 
 // Registration Page
 app.get("/register", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-                        longURL: urlDatabase[req.params.id],
-                        user: req.session["user_id"] }
-  res.render("register", templateVars);
+  let Vars = {  email: findEmailWithId(req.session.user_id), //****Keep Header
+                shortURL: req.params.id,
+                longURL: urlDatabase[req.params.id],
+                user: req.session["user_id"]
+                }
+  res.render("register", Vars);
 });
 
 // Registration Post
@@ -174,14 +198,13 @@ app.post("/register", (req, res) => {
 
 // Login Endpoint
 app.get("/login", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-                        longURL: urlDatabase[req.params.id],
-                        user: req.session.user_id }
-
-  res.render("login", templateVars);
+  let Vars = {  email: findEmailWithId(req.session.user_id), //Keep for header
+                shortURL: req.params.id,
+                longURL: urlDatabase[req.params.id],
+                user: req.session.user_id
+                }
+  res.render("login", Vars);
 });
-
-
 
 // Login Route  IS BROKEN!!!  Grab user id for cookie as in slack notes
 app.post("/login", (req, res) => {
@@ -190,7 +213,12 @@ app.post("/login", (req, res) => {
   }
     // need to make the cookie go to the users id
     // res.cookie('user_id', req.cookies.user_id);
-    req.session.user_id = user_id; //corrected for sessions
+    // This session user_id needs to go to user id that matches email (req.body.email)
+
+
+
+
+    req.session.user_id = findIdWithEmail(req.body.email); //Keep ****
     res.redirect("/");
 });
 
@@ -199,21 +227,26 @@ app.post("/login", (req, res) => {
 
 
 
+// changing templateVars to Vars, adding in email vars for signed in email
+
 // List of URL from Database
 app.get("/urls", (req, res) => {
-  let templateVars = {  urls: urlDatabase,
-                        user: req.session["user_id"]
-                        };
-  res.render("urls_index", templateVars);
+  // email is signed in users email
+  let Vars =  {   email: findEmailWithId(req.session.user_id), //
+                  urls: urlDatabase,
+                  user: req.session["user_id"]
+                  };
+  res.render("urls_index", Vars);
 });
 
 // Enter a URL form
 app.get("/urls/new", (req, res) => {
-  let templateVars = {  urls: urlDatabase,
+  let templateVars = {  email: findEmailWithId(req.session.user_id),
+                        urls: urlDatabase,
                         user: req.session["user_id"]
                         };
   if(req.session["user_id"] === undefined) {
-    res.redirect('/register')
+    res.redirect('/login')
   }
   res.render("urls_new", templateVars);
 
@@ -240,10 +273,11 @@ app.get("/u/:shortURL", (req, res) => {
 
 // Single URL on a page.
 app.get("/urls/:id", (req, res) => {
-   let templateVars = { shortURL: req.params.id,
-                        longURL: urlDatabase[req.params.id].longUrl,
-                        user: req.session["user_id"] }
-  res.render("urls_show", templateVars);
+   let Vars = { email: findEmailWithId(req.session.user_id),
+                shortURL: req.params.id,
+                longURL: urlDatabase[req.params.id].longUrl,
+                user: req.session["user_id"] }
+  res.render("urls_show", Vars);
 });
 
 // Removes a url resourcs
@@ -264,7 +298,7 @@ app.post("/urls/:id", (req, res) => {
 
 
 // Logout Route in process
-app.get("/logout", (req, res) => {
+app.post("/logout", (req, res) => {
 
   req.session = null;
   // console.log('Cookies: ', req.body.username);
