@@ -1,41 +1,36 @@
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "pass"
+var urlDatabase = {
+  "b2xVn2": {
+    userID: "userRandomID",
+    shortUrl: "b2xVn2",
+    longUrl: "http://www.lighthouselabs.ca"
   },
- "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
+  "9sm5xK": {
+    userID: "user2RandomID",
+    shortUrl: "9sm5xK",
+    longUrl: "http://www.google.com"
+  },
+    "wibai9": {
+    userID: "userRandomID",
+    shortUrl: "newxxx",
+    longUrl: "http://www.testlabs.ca"
   }
-}
+};
+
+// got username and need longUrl
 
 
-function findEmailWithId (id) {
-  // loops through object assigning id as the floating name of nested objects
-  for (let i in users) {
-    if (id === users[i].id) {
-      // returns id in users that matches email put into function
-      return users[i].email;
+function findLongUrlWithShortUrl (id) {
+  for (let i in urlDatabase) {
+    if (id === urlDatabase[i].shortUrl) {
+      return urlDatabase[i].longUrl;
     }
   }
 };
 
-console.log(findEmailWithId('user2RandomID'));
 
+findLongUrlWithShortUrl("9sm5xK");
 
-function findIdWithEmail (email) {
-  // loops through object assigning id as the floating name of nested objects
-  for (let i in users) {
-    if (email === users[i].email) {
-      // returns users id that matches email put into function
-      return users[i].id;
-    }
-  }
-};
-
-console.log(findIdWithEmail('user2@example.com'));
+// console.log(findLongUrlWithId("userRandomID"));
 
 
 
@@ -44,9 +39,6 @@ console.log(findIdWithEmail('user2@example.com'));
 
 Main function bugs
 
-
-3 - on page that lists urls, edit button must make a GET
-request to /urls/:id (it goes to delete right now)
 
 4 - on urls/[shortUrl]  make sure update button
 which makes a POST request to /urls/:id   ?? makes a post but where to redirect?

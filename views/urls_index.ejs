@@ -24,6 +24,10 @@
         <li><%= i %> ---> <%= urls[i].longUrl %></li>
         <form method="POST" action="/urls/<%= i %>/delete">
           <input type="submit" value="Delete"></input>
+        </form>
+
+
+        <form method="GET" action="/urls/<%= urls[i].shortUrl %>">
           <input type="submit" value="Edit"></input>
         </form>
         <br>

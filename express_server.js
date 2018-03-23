@@ -146,6 +146,15 @@ function findEmailWithId (id) {
   }
 };
 
+// **** KEEP
+function findLongUrlWithShortUrl (id) {
+  for (let i in urlDatabase) {
+    if (id === urlDatabase[i].shortUrl) {
+      return urlDatabase[i].longUrl;
+    }
+  }
+};
+
 
 
 // Homepage root redirect to urls
@@ -156,8 +165,8 @@ app.get("/", (req, res) => {
 // Registration Page
 app.get("/register", (req, res) => {
   let Vars = {  email: findEmailWithId(req.session.user_id), //****Keep Header
-                shortURL: req.params.id,
-                longURL: urlDatabase[req.params.id],
+                shortUrl: req.params.id,
+                longUrl: urlDatabase[req.params.id],
                 user: req.session["user_id"]
                 }
   res.render("register", Vars);
@@ -199,8 +208,8 @@ app.post("/register", (req, res) => {
 // Login Endpoint
 app.get("/login", (req, res) => {
   let Vars = {  email: findEmailWithId(req.session.user_id), //Keep for header
-                shortURL: req.params.id,
-                longURL: urlDatabase[req.params.id],
+                shortUrl: req.params.id,
+                longUrl: urlDatabase[req.params.id],
                 user: req.session.user_id
                 }
   res.render("login", Vars);
@@ -233,6 +242,7 @@ app.post("/login", (req, res) => {
 app.get("/urls", (req, res) => {
   // email is signed in users email
   let Vars =  {   email: findEmailWithId(req.session.user_id), //
+                  shortUrl: req.params.id,
                   urls: urlDatabase,
                   user: req.session["user_id"]
                   };
@@ -266,16 +276,16 @@ urlDatabasePacking(req.session["user_id"], randomString, req.body.longURL);
 });
 
 // Redirect the /u/ url to the original based on Database info
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+app.get("/u/:shortUrl", (req, res) => {
+  let longURL = urlDatabase[req.params.shortUrl];
   res.redirect(longURL);
 });
 
 // Single URL on a page.
 app.get("/urls/:id", (req, res) => {
-   let Vars = { email: findEmailWithId(req.session.user_id),
-                shortURL: req.params.id,
-                longURL: urlDatabase[req.params.id].longUrl,
+   let Vars = { email: findEmailWithId(req.session.user_id), //KEEP ****
+                shortUrl: req.params.id,   // works, keep
+                longUrl: findLongUrlWithShortUrl(req.params.id),  // doesn't call any url
                 user: req.session["user_id"] }
   res.render("urls_show", Vars);
 });
