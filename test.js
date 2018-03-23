@@ -40,14 +40,6 @@ for (var i in urls) {
 
 Main function bugs
 
-
-7 - u/[shortUrl] should redirect to the full url if this shortUrl exists
-
-
-8 - check if login sets a cookie?
-
-9 - check if register sets a cookie.
-
 10 - register or login with existing user creates a new user ID instance in database
 
 
