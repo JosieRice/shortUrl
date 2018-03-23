@@ -1,20 +1,20 @@
-var express = require("express");
-var app = express();
-var PORT = process.env.PORT || 8080; // default port 8080
+const express = require("express");
 const bodyParser = require("body-parser");
-var cookieSession = require('cookie-session');
-app.use(bodyParser.urlencoded({extended: true}));
-app.set("view engine", "ejs");
-app.use(cookieSession( {
-  secret: 'Chairman Meow',
-}));
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
+const app = express();
+const PORT = process.env.PORT || 8080; // default port 8080
+
+app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieSession( {
+  secret: 'Hire Me! In a hole in the ground there lived a Hobbit.',
+}));
 
 
-
-// Database of URL's
-var urlDatabase = {
+// Databases in nested objects
+const urlDatabase = {
   "b2xVn2": {
     userID: "userRandomID",
     shortUrl: "b2xVn2",
@@ -27,21 +27,23 @@ var urlDatabase = {
   }
 };
 
-// User Database
 const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
     password: "pass"
   },
- "user2RandomID": {
+  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
 
-// creates a 6 character random string
+
+// Functions
+
+// returns a 6 character random string
 function generateRandomString () {
   var shortUrl = "";
   // omitted I, O, l, 0, 1 to make string easier to dictate
@@ -52,43 +54,53 @@ function generateRandomString () {
   return shortUrl;
 }
 
+// returns an ID from users database matched to email give as an argument
+function findIdWithEmail (email) {
+  for (let i in users) {
+    if (email === users[i].email) {
+      return users[i].id;
+    }
+  }
+}
 
-// Searches users object vs parameter (use input email) for same email error
-// This works for registering email checks. modify for login checks.
+// returns an email from users database match to id given as an argument
+function findEmailWithId (id) {
+  for (let i in users) {
+    if (id === users[i].id) {
+      return users[i].email;
+    }
+  }
+}
+
+// return the long url from urlDatabase that matches the short Url given as argument
+function findLongUrlWithShortUrl (id) {
+  for (let i in urlDatabase) {
+    if (id === urlDatabase[i].shortUrl) {
+      return urlDatabase[i].longUrl;
+    }
+  }
+}
+
+// populates nested object for entry into urlDatabase
+function urlDatabasePacking (ID, shortUrl, longUrl) {
+  let newUrl = new Object();
+    newUrl['userID'] = ID;
+    newUrl['shortUrl'] = shortUrl;
+    newUrl['longUrl'] = longUrl;
+  urlDatabase[shortUrl] = newUrl;
+}
+
+// searches userDatabase for email in argument. If found returns email.
+// if not found returns false
 function findDuplicate (email) {
-  let userKeys = [];
-  let emailList = [];
-
-  userKeys = Object.keys(users);
-
-  for (var i = 0; i < userKeys.length - 1; i++) {
-    emailList.push(users[userKeys[i]].email);
-  }
-
-  for (var j = 0; j < emailList.length; j++) {
-    if (email === emailList[j]) {
-      return emailList[j];
+  for (let i in users) {
+    if (email === users[i].email) {
+      return users[i].email;
     }
   }
-};
+  return false;
+}
 
-// searches for duplicate email on login to say it's good
-function findDuplicateLoginEmail (email) {
-  let userKeys = [];
-  let emailList = [];
-
-  userKeys = Object.keys(users);
-
-  for (var i = 0; i < userKeys.length; i++) {
-    emailList.push(users[userKeys[i]].email);
-  }
-
-  for (var j = 0; j < emailList.length; j++) {
-    if (email === emailList[j]) {
-      return emailList[j];
-    }
-  }
-};
 
 // tests that correct email is used on login
 function matchEmailtoPassword (email, password) {
@@ -114,46 +126,9 @@ function matchEmailtoPassword (email, password) {
   }
 }
 
-function urlDatabasePacking (ID, shortUrl, longUrl) {
-  let newUrl = new Object();
-    newUrl['userID'] = ID;
-    newUrl['shortUrl'] = shortUrl;
-    newUrl['longUrl'] = longUrl;
 
-  urlDatabase[shortUrl] = newUrl;
 
-}
 
-// **** Keep
-function findIdWithEmail (email) {
-  // loops through object assigning i as the floating name of nested objects
-  for (let i in users) {
-    if (email === users[i].email) {
-      // returns users id that matches email put into function
-      return users[i].id;
-    }
-  }
-};
-
-// **** Keep
-function findEmailWithId (id) {
-  // loops through object assigning id as the floating name of nested objects
-  for (let i in users) {
-    if (id === users[i].id) {
-      // returns id in users that matches email put into function
-      return users[i].email;
-    }
-  }
-};
-
-// **** KEEP
-function findLongUrlWithShortUrl (id) {
-  for (let i in urlDatabase) {
-    if (id === urlDatabase[i].shortUrl) {
-      return urlDatabase[i].longUrl;
-    }
-  }
-};
 
 
 
