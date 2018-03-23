@@ -41,21 +41,7 @@ for (var i in urls) {
 Main function bugs
 
 
-4 - on urls/[shortUrl]  make sure update button
-which makes a POST request to /urls/:id   ?? makes a post but where to redirect?
-going to shortUrl, not userid this button doesn't work
-
-
-5 - on urls/[shortUrl] - if user is not logged in, it sends an error message.
-currently, logged out user can access this part
-
-
-
-
-
-
-
-6 - on urls/[shortUrl] - logged in user should get an error if they visit a page
+6 - on urls/[shortUrl] - logged in user now gets an error if they visit a page
 for a shortUrl they didn't make
 
 7 - u/[shortUrl] should redirect to the full url if this shortUrl exists

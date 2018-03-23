@@ -289,8 +289,14 @@ app.get("/urls/:id", (req, res) => {
                 user: req.session["user_id"] }
 
     // redirects unauthorized users to login page
-    if (req.session["user_id"] !== urlDatabase[req.params.id].userID) {
+    if (!req.session["user_id"]) {
       res.redirect("/login");
+    }
+
+
+    if (req.session["user_id"] !== urlDatabase[req.params.id].userID) {
+      // res.redirect("/login");
+      res.status(403).send('unauthorized access');
     } else {
       res.render("urls_show", Vars);
     }
