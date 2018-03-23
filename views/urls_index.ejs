@@ -13,15 +13,28 @@
 
 
       <ul>
-        <% for(var k in urls) { %>
-        <li><%= k %> ---> <%= urls[k] %></li>
-        <form method="POST" action="/urls/<%= k %>/delete">
+
+
+        <% for(var i in urls) { %>
+          <% if (user === urls[i].userID) { %>
+
+
+
+
+        <li><%= i %> ---> <%= urls[i].longUrl %></li>
+        <form method="POST" action="/urls/<%= i %>/delete">
           <input type="submit" value="Delete"></input>
           <input type="submit" value="Edit"></input>
         </form>
         <br>
-        <% } %>
+
       </ul>
+
+      <% } else { %>
+
+<br>
+
+      <% } } %>
 
 
 

@@ -2,15 +2,29 @@ var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
-var cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session');
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-app.use(cookieParser());
+app.use(cookieSession( {
+  secret: 'Chairman Meow',
+}));
+const bcrypt = require('bcrypt');
 
-// Database of short and long urls
+
+
+
+// Database of URL's
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    userID: "userRandomID",
+    shortUrl: "b2xVn2",
+    longUrl: "http://www.lighthouselabs.ca"
+  },
+  "9sm5xK": {
+    userID: "user2RandomID",
+    shortUrl: "9sm5xK",
+    longUrl: "http://www.google.com"
+  }
 };
 
 // User Database
@@ -93,18 +107,24 @@ function matchEmailtoPassword (email, password) {
   }
 
   let emailIndex = emailList.findIndex(emailList => emailList === email);
-
-  if (email === emailList[emailIndex] && password === passwordList[emailIndex]) {
+  if (email === emailList[emailIndex] && bcrypt.compareSync(password, passwordList[emailIndex]) === true) {
     return true;
   } else {
     return false;
   }
 }
 
-app.use("/", (req, res, next) => {
-  console.log("Every Route Test Users " + req.cookies.user);
-  next()
-})
+function urlDatabasePacking (ID, shortUrl, longUrl) {
+  let newUrl = new Object();
+    newUrl['userID'] = ID;
+    newUrl['shortUrl'] = shortUrl;
+    newUrl['longUrl'] = longUrl;
+
+  urlDatabase[shortUrl] = newUrl;
+
+}
+
+
 
 // Homepage
 app.get("/", (req, res) => {
@@ -115,7 +135,7 @@ app.get("/", (req, res) => {
 app.get("/register", (req, res) => {
   let templateVars = { shortURL: req.params.id,
                         longURL: urlDatabase[req.params.id],
-                        user: req.cookies["user_id"] }
+                        user: req.session["user_id"] }
   res.render("register", templateVars);
 });
 
@@ -128,7 +148,7 @@ app.post("/register", (req, res) => {
   let newUser = new Object();
     newUser['id'] = randomUserId;
     newUser['email'] = req.body.email;
-    newUser['password'] = req.body.password;
+    newUser['password'] = bcrypt.hashSync(req.body.password, 10);
 
   // puts new user object into global user object
   users[randomUserId] = newUser;
@@ -147,7 +167,7 @@ app.post("/register", (req, res) => {
   }
   // sends back to /urls after submit
   else {
-    res.cookie('user_id', randomUserId);
+    req.session.user_id = randomUserId;
     res.redirect("/urls");
   }
 });
@@ -156,24 +176,22 @@ app.post("/register", (req, res) => {
 app.get("/login", (req, res) => {
   let templateVars = { shortURL: req.params.id,
                         longURL: urlDatabase[req.params.id],
-                        user: req.cookies["user_id"] }
+                        user: req.session.user_id }
 
   res.render("login", templateVars);
 });
 
 
 
-// Login Route
+// Login Route  IS BROKEN!!!  Grab user id for cookie as in slack notes
 app.post("/login", (req, res) => {
-
   if (matchEmailtoPassword(req.body.email, req.body.password) === false) {
     res.status(403).send('There was a problem with your login')
   }
-  else {
     // need to make the cookie go to the users id
-    res.cookie('user_id', req.cookies.user_id);
+    // res.cookie('user_id', req.cookies.user_id);
+    req.session.user_id = user_id; //corrected for sessions
     res.redirect("/");
-  }
 });
 
 
@@ -184,7 +202,7 @@ app.post("/login", (req, res) => {
 // List of URL from Database
 app.get("/urls", (req, res) => {
   let templateVars = {  urls: urlDatabase,
-                        user: req.cookies["user_id"]
+                        user: req.session["user_id"]
                         };
   res.render("urls_index", templateVars);
 });
@@ -192,16 +210,25 @@ app.get("/urls", (req, res) => {
 // Enter a URL form
 app.get("/urls/new", (req, res) => {
   let templateVars = {  urls: urlDatabase,
-                        user: req.cookies["user_id"]
+                        user: req.session["user_id"]
                         };
+  if(req.session["user_id"] === undefined) {
+    res.redirect('/register')
+  }
   res.render("urls_new", templateVars);
+
+
+
 });
 
 
 // Post new url on submit and redirect to short version
 app.post("/urls", (req, res) => {
-  const randomString = generateRandomString();
-  urlDatabase[randomString] = req.body.longURL
+  let templateVars = {  urls: urlDatabase,
+                        user: req.session["user_id"]
+                        };
+const randomString = generateRandomString();
+urlDatabasePacking(req.session["user_id"], randomString, req.body.longURL);
   res.redirect(`/urls/${randomString}`)
 });
 
@@ -214,18 +241,17 @@ app.get("/u/:shortURL", (req, res) => {
 // Single URL on a page.
 app.get("/urls/:id", (req, res) => {
    let templateVars = { shortURL: req.params.id,
-                        longURL: urlDatabase[req.params.id],
-                        user: req.cookies["user_id"] }
+                        longURL: urlDatabase[req.params.id].longUrl,
+                        user: req.session["user_id"] }
   res.render("urls_show", templateVars);
 });
 
 // Removes a url resourcs
 app.post("/urls/:id/delete", (req, res) => {
-  let templateVars = {  shortURL: req.params.id,
-                        urls: urlDatabase };
   delete urlDatabase[req.params.id];
-  res.redirect("/urls", templateVars);
+  res.redirect("/urls");
 });
+
 
 // Updates a long url
 app.post("/urls/:id", (req, res) => {
@@ -240,7 +266,7 @@ app.post("/urls/:id", (req, res) => {
 // Logout Route in process
 app.get("/logout", (req, res) => {
 
-  res.clearCookie('user_id', req.body.user);
+  req.session = null;
   // console.log('Cookies: ', req.body.username);
   res.redirect("/urls");
 });
@@ -251,6 +277,10 @@ app.get("/logout", (req, res) => {
 // Can go to this url to check database
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+});
+
+app.get("/users.json", (req, res) => {
+  res.json(users);
 });
 
 
