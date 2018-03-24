@@ -54,3 +54,14 @@ function findDuplicate (email) {
 // }
 
 console.log(findDuplicate('user2@example.com'));
+
+
+
+// urls to check database during Debugging
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
+app.get("/users.json", (req, res) => {
+  res.json(users);
+});

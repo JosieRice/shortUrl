@@ -143,12 +143,12 @@ app.get("/", (req, res) => {
 
 // Registration
 app.get("/register", (req, res) => {
-  let Vars = {  email: findEmailWithId(req.session.user_id), //****Keep Header
+  let vars = {  email: findEmailWithId(req.session.user_id), //****Keep Header
                 shortUrl: req.params.id,
                 longUrl: urlDatabase[req.params.id],
                 user: req.session["user_id"]
                 }
-  res.render("register", Vars);
+  res.render("register", vars);
 });
 
 // Registration Post
@@ -185,17 +185,17 @@ app.post("/register", (req, res) => {
 
 // Login
 app.get("/login", (req, res) => {
-  let Vars = {  email: findEmailWithId(req.session.user_id), //Keep for header
+  let vars = {  email: findEmailWithId(req.session.user_id), //Keep for header
                 shortUrl: req.params.id,
                 longUrl: urlDatabase[req.params.id],
                 user: req.session.user_id
                 }
-  res.render("login", Vars);
+  res.render("login", vars);
 });
 
 // Login Post
 app.post("/login", (req, res) => {
-  if (verifyPasswordWithEmail(req.body.email, req.body.password) === false) {
+  if (!verifyPasswordWithEmail(req.body.email, req.body.password)) {
     res.status(403).send('There was a problem with your login')
   }
   req.session.user_id = findIdWithEmail(req.body.email); //Keep ****
@@ -207,19 +207,16 @@ app.post("/login", (req, res) => {
 // URL's List Page
 app.get("/urls", (req, res) => {
   // email is signed in users email
-  let Vars =  {   email: findEmailWithId(req.session.user_id), // KEEP ****
+  let vars =  {   email: findEmailWithId(req.session.user_id), // KEEP ****
                   shortUrl: req.params.id,
                   urls: urlDatabase,
                   user: req.session["user_id"]
                   };
-  res.render("urls_index", Vars);
+  res.render("urls_index", vars);
 });
 
 // URL's Post
 app.post("/urls", (req, res) => {
-  let templateVars = {  urls: urlDatabase,
-                        user: req.session["user_id"]
-                        };
   const randomString = generateRandomString();
   urlDatabasePacking(req.session["user_id"], randomString, req.body.longURL);
   res.redirect(`/urls/${randomString}`)
@@ -228,20 +225,15 @@ app.post("/urls", (req, res) => {
 
 
 // Enter a URL To Shorten
-// Error's on console (using log to investigate)
 app.get("/urls/new", (req, res) => {
   let templateVars = {  email: findEmailWithId(req.session.user_id),
                         urls: urlDatabase,
                         user: req.session["user_id"]
                         };
-  if(req.session["user_id"] === undefined) {
-    console.log("237");
+  if(!req.session["user_id"]) {
     res.redirect('/login');
-    console.log("239");
   }
-  console.log("241");
   res.render("urls_new", templateVars);
-  console.log("243");
 });
 
 
@@ -256,7 +248,7 @@ res.redirect(longUrl);
 
 // Single URL on a page.
 app.get("/urls/:id", (req, res) => {
-   let Vars = { email: findEmailWithId(req.session.user_id), //KEEP ****
+   let vars = { email: findEmailWithId(req.session.user_id), //KEEP ****
                 shortUrl: req.params.id,   // works, keep
                 longUrl: findLongUrlWithShortUrl(req.params.id),  // doesn't call any url
                 user: req.session["user_id"] }
@@ -269,16 +261,13 @@ app.get("/urls/:id", (req, res) => {
       // res.redirect("/login");
       res.status(403).send('unauthorized access');
     } else {
-      res.render("urls_show", Vars);
+      res.render("urls_show", vars);
     }
 });
 
 // Single URL Post
 app.post("/urls/:id", (req, res) => {
-  // let templateVars = { shortURL: req.params.id,
-  //                       urls: urlDatabase };
-
-  // delete urlDatabase[req.params.id];
+  urlDatabase[req.params.id].longUrl = req.body.longUrl;
   res.redirect("/urls");
 });
 
@@ -296,17 +285,6 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
-});
-
-
-
-// urls to check database during Debugging
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/users.json", (req, res) => {
-  res.json(users);
 });
 
 

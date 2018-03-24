@@ -9,10 +9,10 @@
       <% include partials/_header %>
     </header>
 
-    <p>Short URL: <%= shortUrl %> </p>
+    <p>Short URL:<a href="/u/<%= shortUrl %>"><%= shortUrl %></a>  </p>
 
       <form method="POST" action="/urls/<%= shortUrl %>">
-        <input type="text" size="35" value="<%= longUrl %>"></input>
+        <input type="text" id="longUrl" name="longUrl" size="35" value="<%= longUrl %>"></input>
         <input type="submit" value="Update"></input>
       </form>
 
