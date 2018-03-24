@@ -1,79 +1,67 @@
-var urlDatabase = {
-  "b2xVn2": {
-    userID: "userRandomID",
-    shortUrl: "b2xVn2",
-    longUrl: "http://www.lighthouselabs.ca"
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "pass"
   },
-  "9sm5xK": {
-    userID: "user2RandomID",
-    shortUrl: "9sm5xK",
-    longUrl: "http://www.google.com"
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
   },
-    "wibai9": {
-    userID: "userRandomID",
-    shortUrl: "newxxx",
-    longUrl: "http://www.testlabs.ca"
+  "user2RandomIDcraig": {
+    id: "user2RandomIDcraig",
+    email: "user2@example.comcraig",
+    password: "dishwasher-funkcraig"
   }
 };
 
-// got username and need longUrl
+// function findDuplicate (email) {
+//   let userKeys = [];
+//   let emailList = [];
 
+//   userKeys = Object.keys(users);
 
-// if user !==
+//   for (var i = 0; i < userKeys.length - 1; i++) {
+//     emailList.push(users[userKeys[i]].email);
+//   }
 
+//   for (var j = 0; j < emailList.length; j++) {
+//     if (email === emailList[j]) {
+//       return emailList[j];
+//     }
+//   }
+// };
 
-for (var i in urls) {
-  if (!user) {
-   res.redirect(/login)
+function findDuplicate (email) {
 
-   } else {
-
-// load page
-   }
+  for (var i = 0; i < users.length - 1; i++) {
+    if (email === users[i].email) {
+      console.log(usersI)
+      return users[i].email;
+    }
+  }
+  return false;
 }
 
 
+//   for (let i in users) {
+//     if (email === users[i].email) {
+//       return users[i].email;
+//     }
+//   }
+//   return false;
+// }
+
+console.log(findDuplicate('user2@example.com'));
 
 
 
-/*
+// urls to check database during Debugging
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
 
-Main function bugs
-
-10 - register or login with existing user creates a new user ID instance in database
-
-
-
-
-
-Extras
-
-Clean up code
-
-Correct variable declaration and semi-colon use
-
-Proper and consistent indentation and spacing
-
-Clear and consistent function and variable names
-
-Modular and reusable code (no need to break your code into Node modules,
- but using helper functions to keep the code DRY is a good idea)
-
-Well-commented code (in other words, that your code is easy to read)
-
-That no debugging, commented-out or dead/un-used code is present
-
-Sensible structure for the project's files and directories
-
-
-
-
-
-Continue on
-
-https://web.compass.lighthouselabs.ca/days/w02d4/activities/308
-
-
-*/
-
-
+app.get("/users.json", (req, res) => {
+  res.json(users);
+});

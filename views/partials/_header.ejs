@@ -9,7 +9,15 @@
 <h1>Tiny App - Simplify your links</h1>
 
 <% if(user === undefined) { %>
-  <a class="link" href="/login">Login</a>  -  <a class="link" href="/register">Register</a>
+
+  <form method="GET" action="/login">
+    <input type="submit" value="Login"></input>
+  </form>
+
+  <form method="GET" action="/register">
+    <input type="submit" value="Register"></input>
+  </form>
+
 <% } else { %>
 
   <p>Welcome <%= email %> </p>
