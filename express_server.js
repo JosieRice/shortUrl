@@ -45,9 +45,9 @@ const users = {
 
 // returns a 6 character random string
 function generateRandomString () {
-  var shortUrl = "";
+  let shortUrl = "";
   // omitted I, O, l, 0, 1 to make string easier to dictate
-  var char = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+  let char = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
   for (let i = 0; i < 6; i++) {
     shortUrl += char.charAt(Math.floor(Math.random() * char.length));
   }
@@ -93,51 +93,55 @@ function urlDatabasePacking (ID, shortUrl, longUrl) {
 // searches userDatabase for email in argument. If found returns email.
 // if not found returns false
 function findDuplicate (email) {
-  for (let i in users) {
-    if (email === users[i].email) {
-      return users[i].email;
-    }
-  }
-  return false;
-}
-
-
-// tests that correct email is used on login
-function matchEmailtoPassword (email, password) {
   let userKeys = [];
   let emailList = [];
-  let passwordList = [];
 
   userKeys = Object.keys(users);
 
-  for (var i = 0; i < userKeys.length; i++) {
+  for (var i = 0; i < userKeys.length - 1; i++) {
     emailList.push(users[userKeys[i]].email);
   }
 
-  for (var p = 0; p < userKeys.length; p++) {
-    passwordList.push(users[userKeys[p]].password);
+  for (var j = 0; j < emailList.length; j++) {
+    if (email === emailList[j]) {
+      return emailList[j];
+    }
   }
+}
 
-  let emailIndex = emailList.findIndex(emailList => emailList === email);
-  if (email === emailList[emailIndex] && bcrypt.compareSync(password, passwordList[emailIndex]) === true) {
+// Verifies encrypted password
+function verifyPasswordWithEmail (email, password) {
+  let pwLookup = findPasswordWithEmail(email);
+
+  if (bcrypt.compareSync(password, pwLookup) === true) {
     return true;
   } else {
     return false;
   }
 }
 
+// finds password by email argument
+function findPasswordWithEmail (email) {
+  for (let i in users) {
+    if (email === users[i].email) {
+      return users[i].password;
+    }
+  }
+}
+
+
+// Start of routes
 
 
 
-
-
-
-// Homepage root redirect to urls
+// Homepage root redirect to urls as main page
 app.get("/", (req, res) => {
   res.redirect("/urls");
 });
 
-// Registration Page
+
+
+// Registration
 app.get("/register", (req, res) => {
   let Vars = {  email: findEmailWithId(req.session.user_id), //****Keep Header
                 shortUrl: req.params.id,
@@ -161,26 +165,25 @@ app.post("/register", (req, res) => {
   // puts new user object into global user object
   users[randomUserId] = newUser;
 
-  // assigns cookie's user_id to it's randomly gen string
-
   // empty username or password returns error
-  // if(!email || !password)
-  if (req.body.email === "" || req.body.password === "" ) {
+  if (req.body.email === "" || req.body.password === "") {
     res.status(400).send('400 Error, you must fill out the fields.');
   }
-
   // duplicate email returns error
   if (req.body.email === findDuplicate(req.body.email)) {
     res.status(400).send('That email already exists!')
   }
-  // sends back to /urls after submit
+  // assigns cookie's user_id to the random string generated on registration
+  // and sends back to /urls after submit
   else {
     req.session.user_id = randomUserId;
     res.redirect("/urls");
   }
 });
 
-// Login Endpoint
+
+
+// Login
 app.get("/login", (req, res) => {
   let Vars = {  email: findEmailWithId(req.session.user_id), //Keep for header
                 shortUrl: req.params.id,
@@ -190,33 +193,21 @@ app.get("/login", (req, res) => {
   res.render("login", Vars);
 });
 
-// Login Route  IS BROKEN!!!  Grab user id for cookie as in slack notes
+// Login Post
 app.post("/login", (req, res) => {
-  if (matchEmailtoPassword(req.body.email, req.body.password) === false) {
+  if (verifyPasswordWithEmail(req.body.email, req.body.password) === false) {
     res.status(403).send('There was a problem with your login')
   }
-    // need to make the cookie go to the users id
-    // res.cookie('user_id', req.cookies.user_id);
-    // This session user_id needs to go to user id that matches email (req.body.email)
-
-
-
-
-    req.session.user_id = findIdWithEmail(req.body.email); //Keep ****
-    res.redirect("/");
+  req.session.user_id = findIdWithEmail(req.body.email); //Keep ****
+  res.redirect("/urls");
 });
 
 
 
-
-
-
-// changing templateVars to Vars, adding in email vars for signed in email
-
-// List of URL from Database
+// URL's List Page
 app.get("/urls", (req, res) => {
   // email is signed in users email
-  let Vars =  {   email: findEmailWithId(req.session.user_id), //
+  let Vars =  {   email: findEmailWithId(req.session.user_id), // KEEP ****
                   shortUrl: req.params.id,
                   urls: urlDatabase,
                   user: req.session["user_id"]
@@ -224,37 +215,44 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", Vars);
 });
 
-// Enter a URL form
+// URL's Post
+app.post("/urls", (req, res) => {
+  let templateVars = {  urls: urlDatabase,
+                        user: req.session["user_id"]
+                        };
+  const randomString = generateRandomString();
+  urlDatabasePacking(req.session["user_id"], randomString, req.body.longURL);
+  res.redirect(`/urls/${randomString}`)
+});
+
+
+
+// Enter a URL To Shorten
+// Error's on console (using log to investigate)
 app.get("/urls/new", (req, res) => {
   let templateVars = {  email: findEmailWithId(req.session.user_id),
                         urls: urlDatabase,
                         user: req.session["user_id"]
                         };
   if(req.session["user_id"] === undefined) {
-    res.redirect('/login')
+    console.log("237");
+    res.redirect('/login');
+    console.log("239");
   }
+  console.log("241");
   res.render("urls_new", templateVars);
-
-
-
+  console.log("243");
 });
 
 
-// Post new url on submit and redirect to short version
-app.post("/urls", (req, res) => {
-  let templateVars = {  urls: urlDatabase,
-                        user: req.session["user_id"]
-                        };
-const randomString = generateRandomString();
-urlDatabasePacking(req.session["user_id"], randomString, req.body.longURL);
-  res.redirect(`/urls/${randomString}`)
-});
 
-// redirect to long Url **** KEEP
+// Redirect to long Url **** KEEP
 app.get("/u/:shortUrl", (req, res) => {
  let longUrl = findLongUrlWithShortUrl(req.params.shortUrl);  //Keep ****
 res.redirect(longUrl);
 });
+
+
 
 // Single URL on a page.
 app.get("/urls/:id", (req, res) => {
@@ -275,14 +273,7 @@ app.get("/urls/:id", (req, res) => {
     }
 });
 
-// Removes a url resourcs
-app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
-});
-
-
-// Updates a long url
+// Single URL Post
 app.post("/urls/:id", (req, res) => {
   // let templateVars = { shortURL: req.params.id,
   //                       urls: urlDatabase };
@@ -292,18 +283,24 @@ app.post("/urls/:id", (req, res) => {
 });
 
 
-// Logout Route in process
-app.post("/logout", (req, res) => {
 
-  req.session = null;
-  // console.log('Cookies: ', req.body.username);
+// Delete URL Post
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
 
 
+// Logout Route in process
+app.post("/logout", (req, res) => {
+  req.session = null;
+  res.redirect("/urls");
+});
 
-// Can go to this url to check database
+
+
+// urls to check database during Debugging
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -311,8 +308,6 @@ app.get("/urls.json", (req, res) => {
 app.get("/users.json", (req, res) => {
   res.json(users);
 });
-
-
 
 
 
