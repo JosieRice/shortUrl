@@ -134,6 +134,7 @@ app.get("/", (req, res) => {
   res.redirect("/urls");
 });
 
+
 // Registration
 app.get("/register", (req, res) => {
   let vars = {  email: findEmailWithId(req.session.user_id), //****Keep Header
