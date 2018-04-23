@@ -12,9 +12,6 @@ app.use(cookieSession( {
   secret: 'Hire Me! In a hole in the ground there lived a Hobbit.',
 }));
 
-
-
-
 // Databases in nested objects
 const urlDatabase = {
   "b2xVn2": {
@@ -130,25 +127,20 @@ function findPasswordWithEmail (email) {
   }
 }
 
-
 // Start of routes
-
-
 
 // Homepage root redirect to urls as main page
 app.get("/", (req, res) => {
   res.redirect("/urls");
 });
 
-
-
 // Registration
 app.get("/register", (req, res) => {
   let vars = {  email: findEmailWithId(req.session.user_id), //****Keep Header
-                shortUrl: req.params.id,
-                longUrl: urlDatabase[req.params.id],
-                user: req.session["user_id"]
-                }
+    shortUrl: req.params.id,
+    longUrl: urlDatabase[req.params.id],
+    user: req.session["user_id"]
+  }
   res.render("register", vars);
 });
 
@@ -182,15 +174,13 @@ app.post("/register", (req, res) => {
   }
 });
 
-
-
 // Login
 app.get("/login", (req, res) => {
   let vars = {  email: findEmailWithId(req.session.user_id), //Keep for header
-                shortUrl: req.params.id,
-                longUrl: urlDatabase[req.params.id],
-                user: req.session.user_id
-                }
+    shortUrl: req.params.id,
+    longUrl: urlDatabase[req.params.id],
+    user: req.session.user_id
+  }
   res.render("login", vars);
 });
 
@@ -203,16 +193,14 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
-
-
 // URL's List Page
 app.get("/urls", (req, res) => {
   // email is signed in users email
   let vars =  {   email: findEmailWithId(req.session.user_id), // KEEP ****
-                  shortUrl: req.params.id,
-                  urls: urlDatabase,
-                  user: req.session["user_id"]
-                  };
+    shortUrl: req.params.id,
+    urls: urlDatabase,
+    user: req.session["user_id"]
+  };
   res.render("urls_index", vars);
 });
 
@@ -223,36 +211,30 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${randomString}`)
 });
 
-
-
 // Enter a URL To Shorten
 app.get("/urls/new", (req, res) => {
   let templateVars = {  email: findEmailWithId(req.session.user_id),
-                        urls: urlDatabase,
-                        user: req.session["user_id"]
-                        };
+    urls: urlDatabase,
+    user: req.session["user_id"]
+    };
   if(!req.session["user_id"]) {
     res.redirect('/login');
   }
   res.render("urls_new", templateVars);
 });
 
-
-
 // Redirect to long Url **** KEEP
 app.get("/u/:shortUrl", (req, res) => {
- let longUrl = findLongUrlWithShortUrl(req.params.shortUrl);  //Keep ****
+ let longUrl = findLongUrlWithShortUrl(req.params.shortUrl);
 res.redirect(longUrl);
 });
 
-
-
 // Single URL on a page.
 app.get("/urls/:id", (req, res) => {
-   let vars = { email: findEmailWithId(req.session.user_id), //KEEP ****
-                shortUrl: req.params.id,   // works, keep
-                longUrl: findLongUrlWithShortUrl(req.params.id),  // doesn't call any url
-                user: req.session["user_id"] }
+  let vars = { email: findEmailWithId(req.session.user_id),
+    shortUrl: req.params.id,   // works, keep
+    longUrl: findLongUrlWithShortUrl(req.params.id),  // doesn't call any url
+    user: req.session["user_id"] }
 
     // redirects unauthorized users to login page
     if (!req.session["user_id"]) {
@@ -272,23 +254,17 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-
-
 // Delete URL Post
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
-
-
 // Logout Route in process
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
-
-
 
 // Starts server
 app.listen(PORT, () => {
