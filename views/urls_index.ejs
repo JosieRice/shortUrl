@@ -5,44 +5,24 @@
     <title>TinyApp</title>
   </head>
   <body>
-
     <header>
       <% include partials/_header %>
     </header>
-
-
-
       <ul>
-
-
         <% for(var i in urls) { %>
           <% if (user === urls[i].userID) { %>
-
-
-
-
         <li><%= i %> ---> <%= urls[i].longUrl %></li>
         <form method="POST" action="/urls/<%= i %>/delete">
           <input type="submit" value="Delete"></input>
         </form>
-
-
         <form method="GET" action="/urls/<%= urls[i].shortUrl %>">
           <input type="submit" value="Edit"></input>
         </form>
         <br>
-
       </ul>
-
       <% } else { %>
-
-<br>
-
+      <br>
       <% } } %>
-
-
-
-
       <a href="/urls/new">Shorten your HTML with just one easy click!</a>
   </body>
 </html>

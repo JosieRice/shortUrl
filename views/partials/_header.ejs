@@ -5,33 +5,19 @@
     <title>Header</title>
   </head>
   <body>
-
-<h1>Tiny App - Simplify your links</h1>
-
-<% if(user === undefined) { %>
-
-  <form method="GET" action="/login">
-    <input type="submit" value="Login"></input>
-  </form>
-
-  <form method="GET" action="/register">
-    <input type="submit" value="Register"></input>
-  </form>
-
-<% } else { %>
-
-  <p>Welcome <%= email %> </p>
-
-
+    <h1>Tiny App - Simplify your links</h1>
+      <% if(user === undefined) { %>
+        <form method="GET" action="/login">
+          <input type="submit" value="Login"></input>
+        </form>
+        <form method="GET" action="/register">
+          <input type="submit" value="Register"></input>
+        </form>
+      <% } else { %>
+        <p>Welcome <%= email %> </p>
         <form method="POST" action="/logout">
           <input type="submit" value="Logout"></input>
         </form>
-
-  <% } %>
-
-
-
-
-
+      <% } %>
   </body>
 </html>
