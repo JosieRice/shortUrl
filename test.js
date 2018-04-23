@@ -65,3 +65,27 @@ app.get("/urls.json", (req, res) => {
 app.get("/users.json", (req, res) => {
   res.json(users);
 });
+
+
+
+
+function findDuplicate (email) {
+
+  for (var i = 0; i < users.length - 1; i++) {
+    if (email === users[i].email) {
+      console.log(usersI)
+      return users[i].email;
+    }
+  }
+  return false;
+}
+
+
+
+function name () {
+
+}
+
+
+
+
