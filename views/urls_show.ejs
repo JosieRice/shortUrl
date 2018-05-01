@@ -10,7 +10,8 @@
     <p>Short URL:<a href="/u/<%= shortUrl %>"><%= shortUrl %></a>  </p>
       <form method="POST" action="/urls/<%= shortUrl %>">
         <input type="text" id="longUrl" name="longUrl" size="35" value="<%= longUrl %>"></input>
-        <input type="submit" value="Update"></input>
+        <br>
+        <input type="submit" value="Save"></input>
       </form>
   </body>
 </html>

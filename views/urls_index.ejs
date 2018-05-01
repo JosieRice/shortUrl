@@ -3,26 +3,29 @@
 <html lang="en">
   <head>
     <title>TinyApp</title>
+    <link href="/css/style.css" rel="stylesheet" type="text/css" >
   </head>
   <body>
-    <header>
-      <% include partials/_header %>
-    </header>
-      <ul>
-        <% for(var i in urls) { %>
-          <% if (user === urls[i].userID) { %>
-        <li><%= i %> ---> <%= urls[i].longUrl %></li>
-        <form method="POST" action="/urls/<%= i %>/delete">
-          <input type="submit" value="Delete"></input>
-        </form>
-        <form method="GET" action="/urls/<%= urls[i].shortUrl %>">
-          <input type="submit" value="Edit"></input>
-        </form>
-        <br>
-      </ul>
-      <% } else { %>
-      <br>
-      <% } } %>
-      <a href="/urls/new">Shorten your HTML with just one easy click!</a>
+      <header>
+        <% include partials/_header %>
+      </header>
+      <div id="page-wrap">
+          <% for(var i in urls) { %>
+            <% if (user === urls[i].userID) { %>
+          <a href="/u/<%= i %>">
+            <%= i %>
+          </a> ---> <%= urls[i].longUrl %><br>
+          <form method="POST" action="/urls/<%= i %>/delete">
+            <input type="submit" value="Delete"></input>
+          </form>
+          <form method="GET" action="/urls/<%= urls[i].shortUrl %>">
+            <input type="submit" value="Edit"></input>
+          </form>
+          <br>
+          <% } else { %>
+            <br>
+          <% } } %>
+          <a href="/urls/new">Shorten your links with just one easy click!</a>
+    </div>
   </body>
 </html>

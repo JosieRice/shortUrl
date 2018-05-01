@@ -1,0 +1,86 @@
+body {
+  padding-top: 80px;
+  background: #ebd6ff;
+  text-align: center;
+}
+
+a {
+  color: #002A2A;
+  text-decoration: none;
+}
+
+#page-wrap {
+  width: 800px;
+  margin: 0 auto;
+}
+
+header {
+  background: #550055;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 2;
+  height: 100px;
+}
+
+header h1 {
+  float: left;
+  margin-left: 10px;
+  margin-top: 30px;
+}
+
+header a {
+  color: #ebd6ff;
+  text-decoration: none;
+}
+
+.logo {
+  float: left;
+  top: 0;
+  z-index: 3;
+  margin: 15px;
+}
+
+.login {
+  margin-top: 14px;
+  margin-right: 21px;
+  float: right;
+  width: 110px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 90%;
+  font-weigth: bold;
+}
+
+.login ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.login li a:link, li a:visited {
+  display: block;
+  padding: 5px 5px 5px 0.5em;
+  background-color: #ecd6ff;
+  color: black;
+  text-decoration: none;
+  border-radius: 8px;
+  margin: 5px;
+}
+
+.login li a:hover {
+  background-color: black;
+  color: #FFFFFF;
+}
+
+.email {
+  color: #ecd6ff;
+}
+
+input[type=text], [type=submit], [type=email], [type=password] {
+  border: 1px solid #550055;
+  border-radius: 8px;
+  padding-left: 5px;
+  -webkit-appearance: none;
+}

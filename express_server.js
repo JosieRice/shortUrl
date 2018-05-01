@@ -9,10 +9,12 @@ const PORT = process.env.PORT || 8080; // default port 8080
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession( {
-  secret: 'Hire Me! In a hole in the ground there lived a Hobbit.',
+  secret: 'Hire Me!',
 }));
 
-// Databases in nested objects
+app.use(express.static(__dirname + "/public"));
+
+// Local database
 const urlDatabase = {
   "b2xVn2": {
     userID: "userRandomID",
@@ -170,7 +172,7 @@ app.post("/register", (req, res) => {
   // and sends back to /urls after submit
   else {
     req.session.user_id = randomUserId;
-    res.redirect("/urls");
+    res.redirect("/urls/new");
   }
 });
 
@@ -190,7 +192,7 @@ app.post("/login", (req, res) => {
     res.status(403).send('There was a problem with your login')
   }
   req.session.user_id = findIdWithEmail(req.body.email); //Keep ****
-  res.redirect("/urls");
+  res.redirect("/urls/new");
 });
 
 // URL's List Page
@@ -261,7 +263,8 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 // Logout Route in process
-app.post("/logout", (req, res) => {
+// This should be a post, change when you make a tag links jquery
+app.get("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
